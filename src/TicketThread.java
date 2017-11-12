@@ -1,4 +1,10 @@
 
+/*
+   This is the core functionality of a Java desktop application that gets food orders 
+   (JSON) from an API call to a web application and subsequently prints the orders to 
+   drive the food production process.
+*/
+
 import JSON.JSONArray;
 import JSON.JSONException;
 import JSON.JSONObject;
@@ -17,15 +23,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
-/**
- *
- * @author Administrator
- */
 public class TicketThread extends Thread{
    int location = 1;
    JTextArea tf;
@@ -57,12 +55,10 @@ public class TicketThread extends Thread{
      if (l != null) jl.setListData(l);
          
      try { 
-         //HttpClient httpclient = getThreadSafeClient();
+         
          HttpClient httpclient = new DefaultHttpClient();
          HttpGet httpget = new HttpGet("https://www.haven-ethic.com/pizza/index.php/order/get_one_ticket?key=3c6e0b8a9c15224a8228b9a98ca1531d&location="+location); 
   
-            //httpclient.execute(httpget);
-            //System.out.println(httpget.getMethod());
             iconLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/sync.png")));
             HttpResponse response = httpclient.execute(httpget);
             BufferedReader rd = new BufferedReader(new InputStreamReader(
@@ -84,8 +80,7 @@ public class TicketThread extends Thread{
                         iconLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/OK.png")));
                         break;
                     }
-                    //if (!line.startsWith("{")) continue; //print PHP errors
-                                        
+                                                            
                     ticket = new Order(false);
                     
                     try{
@@ -112,7 +107,7 @@ public class TicketThread extends Thread{
                         httpclient.execute(verify);
 
                         
-                        /* Git da muddafuckin items */
+                        /* Get the main food items */
                         JSONArray order_items = myjson.getJSONArray("items");
                         int size = order_items.length();                            
                         Item item;
@@ -125,7 +120,7 @@ public class TicketThread extends Thread{
                             ticket.addItem(item);
                         }
                         
-                        /* Git da muddafuckin toppings */
+                        /* Get the toppings */
                         JSONArray item_toppings = myjson.getJSONArray("toppings");
                         size = item_toppings.length();                            
                         Topping topping;
@@ -144,7 +139,7 @@ public class TicketThread extends Thread{
                         e.printStackTrace();
                     }
                   
-                    ticket.go(); //return printer status?!
+                    ticket.go(); //print the ticket
                     tf.append(stat);
                     httpclient.getConnectionManager().shutdown();
                     iconLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/res/OK.png")));
